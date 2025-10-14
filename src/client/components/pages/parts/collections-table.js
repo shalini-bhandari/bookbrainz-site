@@ -35,15 +35,16 @@ class CollectionsTable extends React.Component {
 		super(props);
 		// React does not autobind non-React class methods
 		this.handleEntitySelect = this.handleEntitySelect.bind(this);
+		this.handleRoleSelect = this.handleRoleSelect.bind(this);
 	}
 
 	handleEntitySelect(type) {
 		this.props.onTypeChange(type);
 	}
 
-	handleRoleSelect = (role) => {
+	handleRoleSelect(role) {
 		this.props.onRoleChange(role);
-	};
+	}
 
 	render() {
 		const {showLastModified, showOwner, showIfOwnerOrCollaborator, showPrivacy, results, tableHeading, user, ownerId} = this.props;
@@ -81,10 +82,10 @@ class CollectionsTable extends React.Component {
 				variant="primary"
 				onSelect={this.handleRoleSelect}
 			>
-				<Dropdown.Item eventKey="owner">Owner</Dropdown.Item>
-				<Dropdown.Item eventKey="collaborator">Collaborator</Dropdown.Item>
+				<Dropdown.Item eventKey="owner" key="owner">Owner</Dropdown.Item>
+				<Dropdown.Item eventKey="collaborator" key="collaborator">Collaborator</Dropdown.Item>
 				<Dropdown.Divider/>
-				<Dropdown.Item eventKey="all" key="allTypes">
+				<Dropdown.Item eventKey="all" key="all">
 				All Roles
 				</Dropdown.Item>
 
