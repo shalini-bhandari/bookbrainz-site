@@ -26,13 +26,14 @@ import * as error from '../../common/helpers/error';
  * @param {number} size - no. of last collections required
  * @param {string} entityType - entityType filter
  * @param {object} req - req is an object containing information about the HTTP request
+ * @param {string} roleType - roleType filter
  * @returns {array} - orderedCollections for particular Editor
  * @description
  * This checks whether Editor is valid or not.
  * If Editor is valid then this extracts and returns collections of that editor;
  * If the user is not the editor, then only "Public' collections are returned
  */
-export async function getOrderedCollectionsForEditorPage(from, size, entityType, req) {
+export async function getOrderedCollectionsForEditorPage(from, size, entityType, req, roleType) {
 	const {Editor, UserCollection} = req.app.locals.orm;
 	// If editor isn't present, throw an error
 	await new Editor({id: req.params.id})
@@ -56,9 +57,18 @@ export async function getOrderedCollectionsForEditorPage(from, size, entityType,
 			if (entityType) {
 				builder.where('entity_type', entityType);
 			}
-		})
-		.where((builder) => {
-			builder.where('collaborator_id', '=', req.params.id).orWhere('owner_id', '=', req.params.id);
+			if (roleType === 'owner') {
+				builder.where('owner_id', '=', req.params.id);
+			}
+			else if (roleType === 'collaborator') {
+				builder.where('collaborator_id', '=', req.params.id);
+			}
+			else {
+				builder.where((q) => {
+					q.where('owner_id', '=', req.params.id)
+						.orWhere('collaborator_id', '=', req.params.id);
+				});
+			}
 		})
 		.orderBy('created_at')
 		.fetchPage({
@@ -84,9 +94,11 @@ export async function getOrderedCollectionsForEditorPage(from, size, entityType,
  * @param {number} size - no. of last collections required
  * @param {string} entityType - entityType filter
  * @param {object} orm - the BookBrainz ORM, initialized during app setup
+ * @param {Date} fromDate - starting date filter
+ * @param {Date} toDate - ending date filter
  * @returns {array} - orderedCollections
  */
-export async function getOrderedPublicCollections(from, size, entityType, orm) {
+export async function getOrderedPublicCollections(from, size, entityType, orm, fromDate, toDate) {
 	const {UserCollection} = orm;
 
 	const allCollections = await new UserCollection()
@@ -94,6 +106,12 @@ export async function getOrderedPublicCollections(from, size, entityType, orm) {
 			builder.where('public', true);
 			if (entityType) {
 				builder.where('entity_type', entityType);
+			}
+			if (fromDate) {
+				builder.where('last_modified', '>=', fromDate);
+			}
+			if (toDate) {
+				builder.where('last_modified', '<=', toDate);
 			}
 		})
 		.orderBy('last_modified', 'DESC')

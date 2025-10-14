@@ -641,6 +641,7 @@ router.get('/:id/collections', async (req, res, next) => {
 	const query = parseQuery(req.url);
 	const size = getIntFromQueryParams(query, 'size', DEFAULT_MAX_COLLECTIONS);
 	const from = getIntFromQueryParams(query, 'from', DEFAULT_COLLECTION_OFFSET);
+	const roleType = query.get('role') || 'all';
 
 	const type = query.get('type');
 
@@ -651,7 +652,7 @@ router.get('/:id/collections', async (req, res, next) => {
 		}
 
 		// fetch 1 more collections than required to check nextEnabled
-		const orderedCollections = await getOrderedCollectionsForEditorPage(from, size + 1, type, req);
+		const orderedCollections = await getOrderedCollectionsForEditorPage(from, size + 1, type, req, roleType);
 		const {newResultsArray, nextEnabled} = commonUtils.getNextEnabledAndResultsArray(orderedCollections, size);
 		const editor = await new Editor({id: req.params.id}).fetch();
 		const editorJSON = await getEditorTitleJSON(editor.toJSON(), TitleUnlock);

@@ -188,7 +188,7 @@ describe('getOrderedCollectionsForEditorPage', () => {
 			}
 		};
 
-		const orderedCollections = await getOrderedCollectionsForEditorPage(0, 10, null, req);
+		const orderedCollections = await getOrderedCollectionsForEditorPage(0, 10, null, req, null);
 
 		orderedCollections.forEach((collection) => {
 			expect(collection).to.have.keys(

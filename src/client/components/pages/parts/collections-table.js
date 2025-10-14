@@ -41,6 +41,10 @@ class CollectionsTable extends React.Component {
 		this.props.onTypeChange(type);
 	}
 
+	handleRoleSelect = (role) => {
+		this.props.onRoleChange(role);
+	};
+
 	render() {
 		const {showLastModified, showOwner, showIfOwnerOrCollaborator, showPrivacy, results, tableHeading, user, ownerId} = this.props;
 		const entityTypeSelect = (
@@ -67,6 +71,23 @@ class CollectionsTable extends React.Component {
 				>
 					All Types
 				</Dropdown.Item>
+			</DropdownButton>
+		);
+		const roleSelect = (
+			<DropdownButton
+				className="margin-bottom-d5"
+				id="role-select"
+				title={_.startCase(this.props.role) || 'Select Role'}
+				variant="primary"
+				onSelect={this.handleRoleSelect}
+			>
+				<Dropdown.Item eventKey="owner">Owner</Dropdown.Item>
+				<Dropdown.Item eventKey="collaborator">Collaborator</Dropdown.Item>
+				<Dropdown.Divider/>
+				<Dropdown.Item eventKey="all" key="allTypes">
+				All Roles
+				</Dropdown.Item>
+
 			</DropdownButton>
 		);
 
@@ -116,6 +137,7 @@ class CollectionsTable extends React.Component {
 							{myCollectionButton}
 							{newCollectionButton}
 							{entityTypeSelect}
+							{roleSelect}
 						</ButtonGroup>
 					</div>
 				</div>
@@ -202,9 +224,11 @@ class CollectionsTable extends React.Component {
 
 CollectionsTable.propTypes = {
 	entityTypes: PropTypes.array.isRequired,
+	onRoleChange: PropTypes.func.isRequired,
 	onTypeChange: PropTypes.func.isRequired,
 	ownerId: PropTypes.number,
 	results: PropTypes.array.isRequired,
+	role: PropTypes.string,
 	showIfOwnerOrCollaborator: PropTypes.bool,
 	showLastModified: PropTypes.bool,
 	showOwner: PropTypes.bool,
@@ -215,6 +239,7 @@ CollectionsTable.propTypes = {
 };
 CollectionsTable.defaultProps = {
 	ownerId: null,
+	role: '',
 	showIfOwnerOrCollaborator: false,
 	showLastModified: false,
 	showOwner: false,

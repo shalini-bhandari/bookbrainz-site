@@ -40,12 +40,14 @@ router.get('/', async (req, res, next) => {
 		const from = req.query.from ? parseInt(req.query.from, 10) : 0;
 		const type = req.query.type ? req.query.type : null;
 		const entityTypes = _.keys(commonUtils.getEntityModels(orm));
+		const fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null;
+		const toDate = req.query.toDate ? new Date(req.query.toDate) : null;
 		if (!entityTypes.includes(type) && type !== null) {
 			throw new error.BadRequestError(`Type ${type} do not exist`);
 		}
 		const {user} = req;
 		// fetch 1 more collections than required to check nextEnabled
-		const orderedRevisions = await getOrderedPublicCollections(from, size + 1, type, orm);
+		const orderedRevisions = await getOrderedPublicCollections(from, size + 1, type, orm, fromDate, toDate);
 		const {newResultsArray, nextEnabled} = commonUtils.getNextEnabledAndResultsArray(orderedRevisions, size);
 
 		const props = generateProps(req, res, {
